@@ -79,7 +79,7 @@ app.post('/api/auth/sign-in', (req, res, next) => {
     .catch(err => next(err));
 });
 
-app.get('/api/listings', authorizationMiddleware, (req, res, next) => {
+app.get('/api/listings', (req, res, next) => {
   const sql = `
   select *
   from listings

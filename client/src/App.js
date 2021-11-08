@@ -1,7 +1,7 @@
-import './App.css';
+
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
-import SignUp from './components/Signup';
-import Login from './components/Login';
+// import SignUp from './components/Signup';
+// import Login from './components/Login';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 
@@ -9,6 +9,7 @@ import Home from './components/Home';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './reset.css';
 import './layout.css';
+import './App.css';
 
 
 function App() {
@@ -21,16 +22,16 @@ function App() {
           <Home />
         </Route>
         <Route exact path="/signup">
-          <SignUp />
+          <Home />
         </Route>
         <Route exact path="/login">
-          <Login />
+          <Home />
         </Route>
         <Route exact path="/listing/:listingId">
-          <SignUp />
+          <Home />
         </Route>
         <Route exact path="/favorites">
-          <SignUp />
+          <Home />
         </Route>
       </Switch>
 
