@@ -1,0 +1,45 @@
+.loginContainer form {
+  width: 100%;
+  padding: 40px;
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: rgb(231 232 233);
+  margin-top: 40px;
+}
+
+.loginContainer button {
+  background-color: #9843c0;
+  color: white;
+  border: 1px solid #9843c0;
+}
+
+.loginContainer button:hover {
+  background-color: white;
+  color: #9843c0;
+  border: 1px solid #9843c0;
+}
+
+.signupContainer form {
+  width: 100%;
+  padding: 40px;
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: rgb(231 232 233);
+  margin-top: 40px;
+}
+
+.signupContainer button {
+  background-color: #9843c0;
+  color: white;
+  border: 1px solid #9843c0;
+}
+
+.signupContainer button:hover {
+  background-color: white;
+  color: #9843c0;
+  border: 1px solid #9843c0;
+}
+
+.App {
+  position: relative;
+}
