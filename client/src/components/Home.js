@@ -19,11 +19,8 @@ class Home extends React.Component {
     }
   }
 
-  // Get listings on page load
   componentDidMount() {
-    // Grab token from local storage
     const token = localStorage.getItem('token') || '';
-    console.log(token)
     axios.get('/api/listings', {
       headers: {
         'X-Access-Header': token
@@ -51,7 +48,6 @@ class Home extends React.Component {
                 {description.slice(0, 100)}
               </Card.Text>
               <Button style={{ backgroundColor: "#9843c0", color: 'white', border: '1px solid #9843c0' }}>View Details</Button>
-
             </Card.Body>
             <Card.Footer>
               <p>${price}</p>

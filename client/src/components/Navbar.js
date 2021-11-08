@@ -34,9 +34,6 @@ class AppNavbar extends React.Component {
                     <Nav.Link as={Link} >Logout</Nav.Link>}
                   </>
                 }
-
-
-
               </Nav>
             </Navbar.Collapse>
           </Container>
