@@ -43,3 +43,58 @@
 .App {
   position: relative;
 }
+
+.homeContainer {
+  padding: 40px 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.homeContainer h1 {
+  margin-bottom: 24px;
+  color: #9843c0;
+}
+
+.listingsContainer {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  row-gap: 30px;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-footer p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.navbar {
+  background-color: #9843c0;
+}
+
+.navbar-light .navbar-nav .nav-link {
+  color: white;
+}
+
+.navbar-expand-md .navbar-collapse {
+  justify-content: flex-end;
+  flex-grow: initial;
+}
+
+@media screen and (min-width: 768px) {
+  .listingsContainer {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .listingsContainer {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}

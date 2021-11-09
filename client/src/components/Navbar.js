@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navbar, Container, NavDropdown, Nav } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import {MdOutlineHomeWork} from 'react-icons/md'
 class AppNavbar extends React.Component {
   constructor(props) {
     super(props);
@@ -15,10 +16,10 @@ class AppNavbar extends React.Component {
   render() {
     return (
       <div>
-        <Navbar bg="light" expand="md">
+        <Navbar expand="md">
           <Container>
 
-            <Navbar.Brand href="#home">Logo</Navbar.Brand>
+            <Navbar.Brand href="#home"><MdOutlineHomeWork color="white" size="1.5em"/></Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="me-auto">
@@ -33,9 +34,6 @@ class AppNavbar extends React.Component {
                     <Nav.Link as={Link} >Logout</Nav.Link>}
                   </>
                 }
-
-
-
               </Nav>
             </Navbar.Collapse>
           </Container>
