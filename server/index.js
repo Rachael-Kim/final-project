@@ -11,11 +11,12 @@ const ClientError = require('./client-error');
 const morgan = require('morgan');
 const app = express();
 const db = new pg.Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  connectionString: process.env.DATABASE_URL
+  // ssl: {
+  //   rejectUnauthorized: false
+  // }
 });
+console.log(db);
 app.use(morgan('tiny'));
 const jsonMiddleware = express.json();
 const formMiddleware = express.urlencoded({ extended: false });
@@ -158,6 +159,10 @@ app.get('/api/favorites', authorizationMiddleware, (req, res, next) => {
       res.json(result.rows);
     })
     .catch(err => next(err));
+});
+
+app.get('/api/me', authorizationMiddleware, (req, res) => {
+  res.json(req.user);
 });
 
 app.use(errorMiddleware);
