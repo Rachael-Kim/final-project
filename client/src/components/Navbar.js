@@ -6,13 +6,12 @@ class AppNavbar extends React.Component {
 
 
   render() {
-    console.log('what are my props', this.props);
     return (
       <div>
         <Navbar expand="md">
           <Container>
 
-            <Navbar.Brand href="#home"><MdOutlineHomeWork color="white" size="1.5em"/></Navbar.Brand>
+            <Navbar.Brand as={Link} to="/"><MdOutlineHomeWork color="white" size="1.5em"/></Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="me-auto">

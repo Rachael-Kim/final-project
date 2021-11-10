@@ -1,16 +1,17 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route, Link, withRouter } from 'react-router-dom';
+import axios from 'axios';
+import { Switch, Route, withRouter } from 'react-router-dom';
 import SignUp from './components/Signup';
 import Login from './components/Login';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
+import Favorites from './components/Favorites';
 
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './reset.css';
 import './layout.css';
 import './App.css';
-import axios from 'axios';
 
 
 // PROPS - Share data between components
@@ -23,59 +24,112 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      user: null
+      user: null,
+      favorites: [],
+      listings: []
     }
 
     this.setUser = this.setUser.bind(this);
+    this.addFavorite = this.addFavorite.bind(this);
+    this.removeFavorite = this.removeFavorite.bind(this);
   }
 
   componentDidMount() {
     const token = localStorage.getItem('token');
     if (!token) {
-      this.props.history.push('/login')
-    } else {
-      axios.get('/api/me', {
-        headers: {
-          'X-Access-Token': token
-        }
+      return this.props.history.push('/login')
+    }
+
+    axios.get('/api/me', {
+      headers: {
+        'X-Access-Token': token
+      }
+    })
+      .then(res => {
+        this.setState({ user: res.data });
+        return axios.get('/api/favorites', {
+          headers: {
+            'X-Access-Token': token
+          }
+        })
       })
       .then(res => {
-        console.log(res);
-        this.setState({user: res.data});
+        this.setState({ favorites: res.data });
+        return  axios.get('/api/listings', {
+          headers: {
+            'X-Access-Header': token
+          }
+        })
+      })
+      .then(res => {
+        this.setState({ listings: res.data });
       })
       .catch(err => {
-        console.log('invalid token.. redirecting to login')
         this.props.history.push('/login');
       })
-    
-    }
+
+
   }
 
   setUser(user) {
-    this.setState({user: user});
+    this.setState({ user: user });
   }
 
+  addFavorite(listingId) {
+    // Create new entry in favorites table
+    const token = localStorage.getItem('token');
+
+    axios.post('/api/listing/favorite', { listing_id: listingId }, {
+      headers: {
+        'X-Access-Token': token
+      }
+    })
+      .then(res => {
+        // Find the listing
+        const favorite = this.state.listings.find(listing => listing.listing_id === listingId);
+        const likedFavorite = { favorite_id: res.data.favorite_id, ...favorite };
+        this.setState({ favorites: [...this.state.favorites, likedFavorite] });
+      })
+      .catch(err => {
+        // handle err
+      })
+  }
+  removeFavorite(listingId) {
+
+    const token = localStorage.getItem('token');
+    axios.delete(`/api/listing/favorite/${listingId}`, {
+      headers: {
+        'X-Access-Token': token
+      }
+    })
+      .then(res => {
+        const favorites = this.state.favorites.filter(favorite => favorite.listing_id !== listingId);
+        this.setState({ favorites });
+      })
+      .catch(err => {
+        // handle err
+      })
+  }
 
   render() {
-    // console.log(this.state.user);
     return (
       <div className="App">
         <Navbar user={this.state.user} />
         <Switch>
           <Route exact path="/">
-            <Home />
+            <Home favorites={this.state.favorites} listings={this.state.listings} addFavorite={this.addFavorite} removeFavorite={this.removeFavorite} />
           </Route>
           <Route exact path="/signup">
             <SignUp />
           </Route>
           <Route exact path="/login">
-            <Login setUser={this.setUser}/>
+            <Login setUser={this.setUser} />
           </Route>
           <Route exact path="/listing/:listingId">
             <Home />
           </Route>
           <Route exact path="/favorites">
-            <Home />
+            <Favorites favorites={this.state.favorites} listings={this.state.listings} addFavorite={this.addFavorite} removeFavorite={this.removeFavorite} />
           </Route>
         </Switch>
 
