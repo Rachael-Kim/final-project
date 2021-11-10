@@ -5,6 +5,7 @@ import SignUp from './components/Signup';
 import Login from './components/Login';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
+import Listing from './components/Listing';
 import Favorites from './components/Favorites';
 
 
@@ -57,7 +58,7 @@ class App extends React.Component {
         this.setState({ favorites: res.data });
         return  axios.get('/api/listings', {
           headers: {
-            'X-Access-Header': token
+            'X-Access-Token': token
           }
         })
       })
@@ -126,7 +127,7 @@ class App extends React.Component {
             <Login setUser={this.setUser} />
           </Route>
           <Route exact path="/listing/:listingId">
-            <Home />
+            <Listing favorites={this.state.favorites} listings={this.state.listings} addFavorite={this.addFavorite} removeFavorite={this.removeFavorite} />
           </Route>
           <Route exact path="/favorites">
             <Favorites favorites={this.state.favorites} listings={this.state.listings} addFavorite={this.addFavorite} removeFavorite={this.removeFavorite} />

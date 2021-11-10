@@ -7,26 +7,13 @@ import Home3 from '../images/Home3.jpg';
 import Home4 from '../images/Home4.jpg';
 import Home5 from '../images/Home5.jpg';
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 const Homes = [Home1, Home2, Home3, Home4, Home5];
 
 class Home extends React.Component {
-
   constructor(props) {
     super(props);
     this.renderFavorites = this.renderFavorites.bind(this);
-  }
-
-  componentDidMount() {
-    const token = localStorage.getItem('token') || '';
-    axios.get('/api/listings', {
-      headers: {
-        'X-Access-Header': token
-      }
-    })
-      .then(res => {
-        this.setState({ listings: res.data });
-      })
   }
 
   renderFavorites() {
@@ -42,7 +29,7 @@ class Home extends React.Component {
                 <Card.Text>
                   {description.slice(0, 100)}
                 </Card.Text>
-                <Button style={{ backgroundColor: "#9843c0", color: 'white', border: '1px solid #9843c0' }}>View Details</Button>
+                <Button onClick={() => this.props.history.push}style={{ backgroundColor: "#9843c0", color: 'white', border: '1px solid #9843c0' }}>View Details</Button>
               </Card.Body>
               <Card.Footer>
                 <p>${price}</p>
@@ -79,7 +66,9 @@ class Home extends React.Component {
                 <Card.Text>
                   {description.slice(0, 100)}
                 </Card.Text>
-                <Button style={{ backgroundColor: "#9843c0", color: 'white', border: '1px solid #9843c0' }}>View Details</Button>
+                <Button 
+                onClick={() => this.props.history.push(`/listing/${listing_id}`)}
+                style={{ backgroundColor: "#9843c0", color: 'white', border: '1px solid #9843c0' }}>View Details</Button>
               </Card.Body>
               <Card.Footer>
                 <p>${price}</p>
@@ -97,4 +86,4 @@ class Home extends React.Component {
   }
 }
 
-export default Home;
+export default withRouter(Home);

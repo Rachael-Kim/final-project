@@ -28,9 +28,9 @@ class Favorites extends React.Component {
                 <Card.Footer>
                   <p>${price}</p>
                   {this.props.favorites.findIndex(favorite => favorite.listing_id === listing_id) > -1 ?
-                    <AiFillHeart onClick={() => this.removeFavorite(listing_id)} className="favorite-icon" color="red" size="1.5em" />
+                    <AiFillHeart onClick={() => this.props.removeFavorite(listing_id)} className="favorite-icon" color="red" size="1.5em" />
                     :
-                    <AiOutlineHeart onClick={() => this.addFavorite(listing_id)} className="favorite-icon" color="red" size="1.5em" />
+                    <AiOutlineHeart onClick={() => this.props.addFavorite(listing_id)} className="favorite-icon" color="red" size="1.5em" />
                   }
                 </Card.Footer>
               </Card>
