@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, Button } from 'react-bootstrap';
+import { withRouter } from 'react-router-dom'
 import Home1 from '../images/Home1.jpg';
 import Home2 from '../images/Home2.jpg';
 import Home3 from '../images/Home3.jpg';
@@ -23,7 +24,9 @@ class Favorites extends React.Component {
                   <Card.Text>
                     {description.slice(0, 100)}
                   </Card.Text>
-                  <Button style={{ backgroundColor: "#9843c0", color: 'white', border: '1px solid #9843c0' }}>View Details</Button>
+                  <Button 
+                  onClick={() => this.props.history.push(`/listing/${listing_id}`)}
+                  style={{ backgroundColor: "#9843c0", color: 'white', border: '1px solid #9843c0' }}>View Details</Button>
                 </Card.Body>
                 <Card.Footer>
                   <p>${price}</p>
@@ -42,4 +45,4 @@ class Favorites extends React.Component {
   }
 }
 
-export default Favorites;
+export default withRouter(Favorites);

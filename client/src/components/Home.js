@@ -29,7 +29,9 @@ class Home extends React.Component {
                 <Card.Text>
                   {description.slice(0, 100)}
                 </Card.Text>
-                <Button onClick={() => this.props.history.push}style={{ backgroundColor: "#9843c0", color: 'white', border: '1px solid #9843c0' }}>View Details</Button>
+                <Button 
+                onClick={() => this.props.history.push(`/listing/${listing_id}`)}
+                style={{ backgroundColor: "#9843c0", color: 'white', border: '1px solid #9843c0' }}>View Details</Button>
               </Card.Body>
               <Card.Footer>
                 <p>${price}</p>

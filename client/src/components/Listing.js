@@ -7,6 +7,11 @@ import Home4 from '../images/Home4.jpg';
 import Home5 from '../images/Home5.jpg';
 import { withRouter } from 'react-router-dom';
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
+import { BiBed, BiBath } from 'react-icons/bi';
+import { BsHouseDoor } from 'react-icons/bs';
+import { GiHollowCat } from 'react-icons/gi';
+import { MdOutlineAttachMoney } from 'react-icons/md';
+import { FaDog } from 'react-icons/fa';
 import axios from 'axios';
 const Homes = [Home1, Home2, Home3, Home4, Home5];
 
@@ -25,7 +30,6 @@ class Favorites extends React.Component {
   componentDidMount() {
     const token = localStorage.getItem('token');
     const listingId = this.props.match.params.listingId;
-    console.log('file: Listing.js ~ line 28 ~ Favorites ~ componentDidMount ~ listingId', listingId);
     axios.get(`/api/listing/${listingId}`, {
       headers: {
         'X-Access-Token': token
@@ -50,8 +54,7 @@ class Favorites extends React.Component {
       }
     )
       .then((res) => {
-        console.log('comment', res.data)
-        this.setState({ comments: [...this.state.comments, res.data] });
+        this.setState({ comments: [res.data, ...this.state.comments] });
       })
       .catch(function (error) {
         // handle error
@@ -59,38 +62,70 @@ class Favorites extends React.Component {
   }
 
   render() {
-    const { url, title_property, price, description, listing_id } = this.state.listing;
+    const { url, title_property, price, description, listing_id, city, state, home_type, is_cat_friendly, is_dog_friendly, num_of_rooms, timestamp } = this.state.listing;
+    const date = new Date(timestamp);
+    const formattedDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     return (
-      <div className="favorite">
+      <div className="listingContainer">
         <section className="favoriteContainer">
-          <h1>Listing</h1>
-          <div className="card">
+          <div>
             {Object.keys(this.state.listing).length > 0 && (
-              <Card key={listing_id} border="#9843c0" style={{ width: '22rem', border: "1px solid #9843c0" }}>
-                <Card.Img variant="top" src={Homes[listing_id % 5]} />
-                <Card.Body>
-                  <Card.Title>{title_property}</Card.Title>
-                  <Card.Text>
-                    {description.slice(0, 100)}
-                  </Card.Text>
-                  <Button style={{ backgroundColor: "#9843c0", color: 'white', border: '1px solid #9843c0' }}>View Details</Button>
-                </Card.Body>
-                <Card.Footer>
-                  <p>${price}</p>
-                  {this.props.favorites.findIndex(favorite => favorite.listing_id === listing_id) > -1 ?
-                    <AiFillHeart onClick={() => this.props.removeFavorite(listing_id)} className="favorite-icon" color="red" size="1.5em" />
-                    :
-                    <AiOutlineHeart onClick={() => this.props.addFavorite(listing_id)} className="favorite-icon" color="red" size="1.5em" />
-                  }
-                </Card.Footer>
-              </Card>
+              <div className="listing">
+                {this.props.favorites.findIndex(favorite => favorite.listing_id === listing_id) > -1 ?
+                  <Button onClick={() => this.props.removeFavorite(listing_id)} className="favorite-button" >Favorited</Button>
+                  :
+                  <Button onClick={() => this.props.addFavorite(listing_id)} className="favorite-button">Add to Favorites</Button>
+                }
+                <h1>{title_property}</h1>
+                <div className="header-info">
+                  <p>{city}, {state}</p>
+                  <p>Listed: {formattedDate}</p>
+                </div>
+                <img src={Homes[listing_id % 5]} />
+                <div className="separator"></div>
+                <div className="listing-details">
+                  <div className="body-information-container">
+                    <BsHouseDoor size="1.5em" />
+                    <p>{home_type}</p>
+                  </div>
+                  <div className="body-information-container">
+                    <MdOutlineAttachMoney size="1.5em" />
+                    <p>{price}/night</p>
+                  </div>
+                  <div className="body-information-container">
+                    <BiBed size="1.5em" />
+                    <p>{num_of_rooms} bedrooms</p>
+                  </div>
+                  <div className="body-information-container">
+                    <BiBath size="1.5em" />
+                    <p>{num_of_rooms} baths</p>
+                  </div>
+                  <div className="body-information-container">
+                    <GiHollowCat size="1.5em" />
+                    <p>{is_cat_friendly ? 'Cat Friendly' : 'No Cats Allowed'}</p>
+                  </div>
+                  <div className="body-information-container">
+                    <FaDog size="1.5em" />
+                    <p>{is_dog_friendly ? 'Dog Friendly' : 'No Dogs Allowed'}</p>
+                  </div>
+                </div>
+
+                <div className="separator"></div>
+
+                <h3 style={{ marginBottom: '24px' }}>Learn More</h3>
+                <p>{description}</p>
+
+                <div className="separator"></div>
+
+
+              </div>
             )}
           </div>
 
-          <Form onSubmit={this.handleSubmit}>
+          <Form onSubmit={this.handleSubmit} style={{ marginTop: '80px'}}>
             <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Leave a comment</Form.Label>
-              <Form.Control as="textarea" value={this.state.comment} placeholder="Max 250 characters" onChange={e => this.setState(prevState => {
+              <Form.Label as="h4">Leave a comment</Form.Label>
+              <Form.Control as="textarea" style={{ height: '100px' }} value={this.state.comment} placeholder="Max 250 characters" onChange={e => this.setState(prevState => {
                 return {
                   ...prevState,
                   comment: e.target.value
@@ -100,21 +135,28 @@ class Favorites extends React.Component {
 
             </Form.Group>
 
-            <Button variant="primary" type="submit">
+            <Button className="button comment-button" variant="primary" type="submit">
               Comment
             </Button>
           </Form>
 
 
           <div className="comments">
-            {this.state.comments.map(({comment_id, body, timestamp, email}) => {
+            {this.state.comments.map(({ comment_id, body, timestamp, email }) => {
+              const date = new Date(timestamp);
+              const formattedDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
               return (
                 <div className="comment" key={comment_id}>
                   <div className="comment-header">
-                    <img alt="profile picture"/>
-                    <p>{email}</p>
+                    <div className="circle">
+                      <span>{email[0].toUpperCase()}</span>
+                    </div>
+                    <div className="person">
+                      <p>{email}</p>
+                      <p>{formattedDate}</p>
+                    </div>
                   </div>
-                  <p>
+                  <p class="comment_body">
                     {body}
                   </p>
                 </div>

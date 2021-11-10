@@ -109,6 +109,7 @@ app.get('/api/listing/:listingId', authorizationMiddleware, (req, res, next) => 
       join users 
       ON comments.user_id = users.user_id
       where comments.listing_id = $1
+      ORDER BY comments.timestamp DESC
       `;
       const params = [listingId];
       return db.query(commentsSql, params);
@@ -190,7 +191,6 @@ app.post('/api/comment', authorizationMiddleware, (req, res, next) => {
   const params = [comment, user_id, listing_id];
   db.query(sql, params)
     .then(result => {
-      console.log('????', result);
       const lastCommentSql = `
       select * from comments
       join users 
