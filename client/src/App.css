@@ -259,6 +259,36 @@
   margin-bottom: 0;
 }
 
+.modal-body {
+  padding: 40px;
+  padding-top: 10px;
+}
+.modal-body .form-label {
+  font-weight: bold;
+  margin-top: 1em;
+  font-size: 18px;
+}
+.modal-body .form-check {
+  margin-bottom: 16px;
+  font-size: 16px;
+}
+.modal-body .form-select {
+  width: 200px;
+}
+.modal-body .form-control {
+  width: 200px;
+}
+
+.sort-filter-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+.sort-filter-container select {
+  width: 300px;
+}
+
 @media screen and (min-width: 768px) {
   .listingsContainer {
     grid-template-columns: 1fr 1fr;

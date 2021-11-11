@@ -27,12 +27,14 @@ class App extends React.Component {
     this.state = {
       user: null,
       favorites: [],
-      listings: []
+      listings: [],
     }
 
     this.setUser = this.setUser.bind(this);
     this.addFavorite = this.addFavorite.bind(this);
     this.removeFavorite = this.removeFavorite.bind(this);
+    this.sort = this.sort.bind(this);
+    
   }
 
   componentDidMount() {
@@ -112,13 +114,30 @@ class App extends React.Component {
       })
   }
 
+  sort(value) {
+    switch(value) {
+      case 'minPrice':
+        this.setState({listings: this.state.listings.sort((a, b) => a.price - b.price)});
+        break;
+      case 'maxPrice':
+        this.setState({listings: this.state.listings.sort((a, b) => b.price - a.price)});
+        break;
+      case 'date':
+        this.setState({listings: this.state.listings.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))});
+        break;
+      default: 
+        break;
+    }
+  }
+
+
   render() {
     return (
       <div className="App">
         <Navbar user={this.state.user} />
         <Switch>
           <Route exact path="/">
-            <Home favorites={this.state.favorites} listings={this.state.listings} addFavorite={this.addFavorite} removeFavorite={this.removeFavorite} />
+            <Home sort={this.sort} favorites={this.state.favorites} listings={this.state.listings} addFavorite={this.addFavorite} removeFavorite={this.removeFavorite} />
           </Route>
           <Route exact path="/signup">
             <SignUp />
