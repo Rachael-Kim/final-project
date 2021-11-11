@@ -1,9 +1,18 @@
 import React from 'react';
-import { Navbar, Container, NavDropdown, Nav } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Navbar, Container, Nav } from 'react-bootstrap';
+import { Link, withRouter } from 'react-router-dom';
 import {MdOutlineHomeWork} from 'react-icons/md'
 class AppNavbar extends React.Component {
 
+  constructor(props) {
+    super(props);
+    this.logout = this.logout.bind(this);
+  }
+
+  logout() {
+    localStorage.removeItem('token');
+    this.props.history.push('/login');
+  }
 
   render() {
     return (
@@ -11,7 +20,7 @@ class AppNavbar extends React.Component {
         <Navbar expand="md">
           <Container>
 
-            <Navbar.Brand as={Link} to="/"><MdOutlineHomeWork color="white" size="1.5em"/></Navbar.Brand>
+            <Navbar.Brand as={Link} to={this.props.user ? "/" : "/login"}><MdOutlineHomeWork color="white" size="1.5em"/></Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="me-auto">
@@ -23,7 +32,7 @@ class AppNavbar extends React.Component {
                   :
                   <>
                     <Nav.Link as={Link} to="/favorites">Favorites</Nav.Link>
-                    <Nav.Link as={Link} >Logout</Nav.Link>
+                    <Nav.Link onClick={this.logout}>Logout</Nav.Link>
                   </>
                 }
               </Nav>
@@ -35,4 +44,4 @@ class AppNavbar extends React.Component {
   }
 }
 
-export default AppNavbar;
+export default withRouter(AppNavbar);

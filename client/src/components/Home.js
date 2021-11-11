@@ -38,7 +38,6 @@ class Home extends React.Component {
   }
 
   filterCheckbox(value, isChecked) {
-    console.log('is checked', isChecked);
     if (value === 'cat-friendly') {
       this.setState({ isCatFriendly: isChecked });
     } else if (value === 'dog-friendly') {

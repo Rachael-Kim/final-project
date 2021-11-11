@@ -37,10 +37,8 @@ class SignUp extends React.Component {
   render() {
     return (
       <div className="signupContainer">
-
-
         <Form onSubmit={this.handleSubmit}>
-          <h2>Sign Up</h2>
+          <h2 style={{marginBottom: '32px'}}>Sign Up</h2>
           <Form.Group className="mb-3" controlId="formBasicEmail">
             <Form.Label>Email address</Form.Label>
             <Form.Control value={this.state.email} type="email" placeholder="Enter email" onChange={e => this.setState(prevState => {

@@ -34,7 +34,33 @@ class App extends React.Component {
     this.addFavorite = this.addFavorite.bind(this);
     this.removeFavorite = this.removeFavorite.bind(this);
     this.sort = this.sort.bind(this);
-    
+    this.fetchListings = this.fetchListings.bind(this);
+    this.fetchFavorites = this.fetchFavorites.bind(this);
+
+  }
+
+  fetchListings() {
+    const token = localStorage.getItem('token');
+    axios.get('/api/listings', {
+      headers: {
+        'X-Access-Token': token
+      }
+    })
+      .then(res => {
+        this.setState({ listings: res.data });
+      })
+  }
+
+  fetchFavorites() {
+    const token = localStorage.getItem('token');
+    axios.get('/api/favorites', {
+      headers: {
+        'X-Access-Token': token
+      }
+    })
+      .then(res => {
+        this.setState({ favorites: res.data });
+      })
   }
 
   componentDidMount() {
@@ -49,33 +75,17 @@ class App extends React.Component {
       }
     })
       .then(res => {
-        this.setState({ user: res.data });
-        return axios.get('/api/favorites', {
-          headers: {
-            'X-Access-Token': token
-          }
-        })
-      })
-      .then(res => {
-        this.setState({ favorites: res.data });
-        return  axios.get('/api/listings', {
-          headers: {
-            'X-Access-Token': token
-          }
-        })
-      })
-      .then(res => {
-        this.setState({ listings: res.data });
+        this.setUser(res.data);
       })
       .catch(err => {
         this.props.history.push('/login');
       })
-
-
   }
 
   setUser(user) {
     this.setState({ user: user });
+    this.fetchFavorites();
+    this.fetchListings();
   }
 
   addFavorite(listingId) {
@@ -115,17 +125,17 @@ class App extends React.Component {
   }
 
   sort(value) {
-    switch(value) {
+    switch (value) {
       case 'minPrice':
-        this.setState({listings: this.state.listings.sort((a, b) => a.price - b.price)});
+        this.setState({ listings: this.state.listings.sort((a, b) => a.price - b.price) });
         break;
       case 'maxPrice':
-        this.setState({listings: this.state.listings.sort((a, b) => b.price - a.price)});
+        this.setState({ listings: this.state.listings.sort((a, b) => b.price - a.price) });
         break;
       case 'date':
-        this.setState({listings: this.state.listings.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))});
+        this.setState({ listings: this.state.listings.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) });
         break;
-      default: 
+      default:
         break;
     }
   }
