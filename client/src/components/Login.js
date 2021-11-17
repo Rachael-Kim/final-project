@@ -62,7 +62,7 @@ class Login extends React.Component {
             } />
           </Form.Group>
           <Link to="/signup">Don't have an account? Click here to register.</Link>
-          <Button variant="primary" type="submit">
+          <Button style={{marginTop: '16px', display: 'block'}} variant="primary" type="submit">
             Login
           </Button>
         </Form>

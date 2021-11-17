@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, Button } from 'react-bootstrap';
+import { withRouter } from 'react-router-dom'
 import Home1 from '../images/Home1.jpg';
 import Home2 from '../images/Home2.jpg';
 import Home3 from '../images/Home3.jpg';
@@ -23,14 +24,16 @@ class Favorites extends React.Component {
                   <Card.Text>
                     {description.slice(0, 100)}
                   </Card.Text>
-                  <Button style={{ backgroundColor: "#9843c0", color: 'white', border: '1px solid #9843c0' }}>View Details</Button>
+                  <Button 
+                  onClick={() => this.props.history.push(`/listing/${listing_id}`)}
+                  style={{ backgroundColor: "#9843c0", color: 'white', border: '1px solid #9843c0' }}>View Details</Button>
                 </Card.Body>
                 <Card.Footer>
                   <p>${price}</p>
                   {this.props.favorites.findIndex(favorite => favorite.listing_id === listing_id) > -1 ?
-                    <AiFillHeart onClick={() => this.removeFavorite(listing_id)} className="favorite-icon" color="red" size="1.5em" />
+                    <AiFillHeart onClick={() => this.props.removeFavorite(listing_id)} className="favorite-icon" color="red" size="1.5em" />
                     :
-                    <AiOutlineHeart onClick={() => this.addFavorite(listing_id)} className="favorite-icon" color="red" size="1.5em" />
+                    <AiOutlineHeart onClick={() => this.props.addFavorite(listing_id)} className="favorite-icon" color="red" size="1.5em" />
                   }
                 </Card.Footer>
               </Card>
@@ -42,4 +45,4 @@ class Favorites extends React.Component {
   }
 }
 
-export default Favorites;
+export default withRouter(Favorites);

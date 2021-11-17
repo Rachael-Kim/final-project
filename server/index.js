@@ -16,7 +16,6 @@ const db = new pg.Pool({
   //   rejectUnauthorized: false
   // }
 });
-console.log(db);
 app.use(morgan('tiny'));
 const jsonMiddleware = express.json();
 const formMiddleware = express.urlencoded({ extended: false });
@@ -42,7 +41,7 @@ app.post('/api/auth/sign-up', (req, res, next) => {
     })
     .then(result => {
       const [user] = result.rows;
-      res.status(201).json('hello world');
+      res.status(201).json(user);
     })
     .catch(err => next(err));
 });
@@ -80,7 +79,7 @@ app.post('/api/auth/sign-in', (req, res, next) => {
     .catch(err => next(err));
 });
 
-app.get('/api/listings', (req, res, next) => {
+app.get('/api/listings', authorizationMiddleware, (req, res, next) => {
   const sql = `
   select *
   from listings
@@ -97,22 +96,33 @@ app.get('/api/listing/:listingId', authorizationMiddleware, (req, res, next) => 
   const sql = `
   select *
   from listings
-  where listing_id = $1
+  where listings.listing_id = $1
   `;
+  let listing;
   const params = [listingId];
   db.query(sql, params)
     .then(result => {
-      const listing = result.rows[0];
+      listing = result.rows[0];
+      const commentsSql = `
+      select *
+      from comments
+      join users
+      ON comments.user_id = users.user_id
+      where comments.listing_id = $1
+      ORDER BY comments.timestamp DESC
+      `;
+      const params = [listingId];
+      return db.query(commentsSql, params);
+    })
+    .then(result => {
+      listing.comments = result.rows;
       res.json(listing);
     })
     .catch(err => next(err));
 });
 
-// What route we want to hit when the user clicks on the heart
 app.post('/api/listing/favorite', authorizationMiddleware, (req, res, next) => {
-  // To create a new favorite, we need 2 pieces of information: user_id, listing_id
-  // User ID is stored in req.user.id
-  const user_id = req.user.id;
+  const user_id = req.user.user_id;
   const listing_id = req.body.listing_id;
   const sql = `
   insert into "favorites" ("user_id", "listing_id")
@@ -128,13 +138,15 @@ app.post('/api/listing/favorite', authorizationMiddleware, (req, res, next) => {
     .catch(err => next(err));
 });
 
-app.delete('/api/listing/favorite/:favorite_id', authorizationMiddleware, (req, res, next) => {
-  const { favorite_id } = req.params;
+app.delete('/api/listing/favorite/:listing_id', authorizationMiddleware, (req, res, next) => {
+  const user_id = req.user.user_id;
+  const { listing_id } = req.params;
   const sql = `
   delete from favorites
-  where favorite_id = $1
+  where user_id = $1
+  and listing_id = $2
   `;
-  const params = [favorite_id];
+  const params = [user_id, listing_id];
   db.query(sql, params)
     .then(result => {
       res.json(result.rowCount);
@@ -143,13 +155,12 @@ app.delete('/api/listing/favorite/:favorite_id', authorizationMiddleware, (req, 
 });
 
 app.get('/api/favorites', authorizationMiddleware, (req, res, next) => {
-  const user_id = req.user.id;
-  console.log('user_id', user_id);
+  const user_id = req.user.user_id;
   const sql = `
    select *
    from favorites
-   join listing on
-   favorites.listing_id = listing.id
+   join listings l on
+   favorites.listing_id = l.listing_id
    where favorites.user_id = $1
    `;
 
@@ -165,13 +176,42 @@ app.get('/api/me', authorizationMiddleware, (req, res) => {
   res.json(req.user);
 });
 
+app.post('/api/comment', authorizationMiddleware, (req, res, next) => {
+  const user_id = req.user.user_id;
+  const { comment, listing_id } = req.body;
+
+  const sql = `
+  INSERT INTO "comments" ("body", "user_id", "listing_id")
+        VALUES ($1, $2, $3)
+        RETURNING "comment_id"
+  `;
+  const params = [comment, user_id, listing_id];
+  // Create that comment in the database
+  db.query(sql, params)
+    .then(result => {
+      // Grab that comment that we just inserted so that we can respond to the frontend
+      const lastCommentSql = `
+      SELECT * from comments
+      JOIN users
+      ON comments.user_id = users.user_id
+      WHERE comments.comment_id = $1
+      `;
+      const params = [result.rows[0].comment_id];
+      return db.query(lastCommentSql, params);
+    })
+    .then(result => {
+      res.json(result.rows[0]);
+    })
+    .catch(err => next(err));
+
+});
+
 app.use(errorMiddleware);
 
 app.get('*', (req, res) => {
-  console.log('wildcard route');
   res.sendFile(path.resolve(__dirname, './public', 'index.html'));
 });
 
 app.listen(process.env.PORT, () => {
-  console.log(`express server listening on port ${process.env.PORT}`);
+  // console.log(`express server listening on port ${process.env.PORT}`);
 });

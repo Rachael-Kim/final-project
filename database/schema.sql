@@ -44,6 +44,16 @@ CREATE TABLE "favorites" (
 	"timestamp" TIMESTAMP NOT NULL default now(),
 	PRIMARY KEY ("favorite_id")
 );
+CREATE TABLE "comments" (
+	"comment_id" serial,
+	"body" TEXT NOT NULL,
+	"user_id" integer NOT NULL,
+	"listing_id" integer NOT NULL,
+	"timestamp" TIMESTAMP NOT NULL default now(),
+	PRIMARY KEY ("comment_id")
+);
 
 ALTER TABLE "favorites" ADD CONSTRAINT "favorites_fk0" FOREIGN KEY ("listing_id") REFERENCES "listings"("listing_id");
 ALTER TABLE "favorites" ADD CONSTRAINT "favorites_fk1" FOREIGN KEY ("user_id") REFERENCES "users"("user_id");
+ALTER TABLE "comments" ADD CONSTRAINT "comments_fk0" FOREIGN KEY ("user_id") REFERENCES "users"("user_id");
+ALTER TABLE "comments" ADD CONSTRAINT "comments_fk1" FOREIGN KEY ("listing_id") REFERENCES "listings"("listing_id");

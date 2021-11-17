@@ -28,6 +28,7 @@
       "error",
       "multi-line"
     ],
+    "camelcase": 0,
     "no-console": [
       "error",
       {

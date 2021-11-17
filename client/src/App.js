@@ -5,15 +5,12 @@ import SignUp from './components/Signup';
 import Login from './components/Login';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
+import Listing from './components/Listing';
 import Favorites from './components/Favorites';
-
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './reset.css';
 import './layout.css';
 import './App.css';
-
-
 // PROPS - Share data between components
 // BIG BIG BIG CAVEAT - You can only pass props from a parent component to a child component
 
@@ -26,12 +23,40 @@ class App extends React.Component {
     this.state = {
       user: null,
       favorites: [],
-      listings: []
+      listings: [],
     }
 
     this.setUser = this.setUser.bind(this);
     this.addFavorite = this.addFavorite.bind(this);
     this.removeFavorite = this.removeFavorite.bind(this);
+    this.sort = this.sort.bind(this);
+    this.fetchListings = this.fetchListings.bind(this);
+    this.fetchFavorites = this.fetchFavorites.bind(this);
+
+  }
+
+  fetchListings() {
+    const token = localStorage.getItem('token');
+    axios.get('/api/listings', {
+      headers: {
+        'X-Access-Token': token
+      }
+    })
+      .then(res => {
+        this.setState({ listings: res.data });
+      })
+  }
+
+  fetchFavorites() {
+    const token = localStorage.getItem('token');
+    axios.get('/api/favorites', {
+      headers: {
+        'X-Access-Token': token
+      }
+    })
+      .then(res => {
+        this.setState({ favorites: res.data });
+      })
   }
 
   componentDidMount() {
@@ -46,56 +71,36 @@ class App extends React.Component {
       }
     })
       .then(res => {
-        this.setState({ user: res.data });
-        return axios.get('/api/favorites', {
-          headers: {
-            'X-Access-Token': token
-          }
-        })
-      })
-      .then(res => {
-        this.setState({ favorites: res.data });
-        return  axios.get('/api/listings', {
-          headers: {
-            'X-Access-Header': token
-          }
-        })
-      })
-      .then(res => {
-        this.setState({ listings: res.data });
+        this.setUser(res.data);
       })
       .catch(err => {
         this.props.history.push('/login');
       })
-
-
   }
 
   setUser(user) {
     this.setState({ user: user });
+    this.fetchFavorites();
+    this.fetchListings();
   }
 
   addFavorite(listingId) {
-    // Create new entry in favorites table
     const token = localStorage.getItem('token');
-
     axios.post('/api/listing/favorite', { listing_id: listingId }, {
       headers: {
         'X-Access-Token': token
       }
     })
       .then(res => {
-        // Find the listing
         const favorite = this.state.listings.find(listing => listing.listing_id === listingId);
         const likedFavorite = { favorite_id: res.data.favorite_id, ...favorite };
         this.setState({ favorites: [...this.state.favorites, likedFavorite] });
       })
       .catch(err => {
-        // handle err
-      })
+        alert(err);
+      });
   }
   removeFavorite(listingId) {
-
     const token = localStorage.getItem('token');
     axios.delete(`/api/listing/favorite/${listingId}`, {
       headers: {
@@ -103,12 +108,29 @@ class App extends React.Component {
       }
     })
       .then(res => {
+        // Filter out the listing that the user favorited
         const favorites = this.state.favorites.filter(favorite => favorite.listing_id !== listingId);
         this.setState({ favorites });
       })
       .catch(err => {
-        // handle err
-      })
+        alert(err);
+      });
+  }
+
+  sort(value) {
+    switch (value) {
+      case 'minPrice':
+        this.setState({ listings: this.state.listings.sort((a, b) => a.price - b.price) });
+        break;
+      case 'maxPrice':
+        this.setState({ listings: this.state.listings.sort((a, b) => b.price - a.price) });
+        break;
+      case 'date':
+        this.setState({ listings: this.state.listings.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) });
+        break;
+      default:
+        break;
+    }
   }
 
   render() {
@@ -117,7 +139,7 @@ class App extends React.Component {
         <Navbar user={this.state.user} />
         <Switch>
           <Route exact path="/">
-            <Home favorites={this.state.favorites} listings={this.state.listings} addFavorite={this.addFavorite} removeFavorite={this.removeFavorite} />
+            <Home sort={this.sort} favorites={this.state.favorites} listings={this.state.listings} addFavorite={this.addFavorite} removeFavorite={this.removeFavorite} />
           </Route>
           <Route exact path="/signup">
             <SignUp />
@@ -126,7 +148,7 @@ class App extends React.Component {
             <Login setUser={this.setUser} />
           </Route>
           <Route exact path="/listing/:listingId">
-            <Home />
+            <Listing favorites={this.state.favorites} listings={this.state.listings} addFavorite={this.addFavorite} removeFavorite={this.removeFavorite} />
           </Route>
           <Route exact path="/favorites">
             <Favorites favorites={this.state.favorites} listings={this.state.listings} addFavorite={this.addFavorite} removeFavorite={this.removeFavorite} />
