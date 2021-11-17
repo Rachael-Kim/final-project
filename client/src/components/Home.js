@@ -6,17 +6,15 @@ import Home2 from '../images/Home2.jpg';
 import Home3 from '../images/Home3.jpg';
 import Home4 from '../images/Home4.jpg';
 import Home5 from '../images/Home5.jpg';
-import {AiOutlineHeart, AiFilledHeart} from 'react-icons/ai';
-
+import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
+import { Link } from 'react-router-dom'
 const Homes = [Home1, Home2, Home3, Home4, Home5];
 
 class Home extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      listings: []
-    }
+    this.renderFavorites = this.renderFavorites.bind(this);
   }
 
   componentDidMount() {
@@ -27,36 +25,74 @@ class Home extends React.Component {
       }
     })
       .then(res => {
-        console.log(res.data);
         this.setState({ listings: res.data });
       })
   }
 
+  renderFavorites() {
+    return (
+      <section className="favoritesContainer">
+        <h1>Your Favorites</h1>
+        <div className="cards">
+          {this.props.favorites.slice(0, 6).map(({ url, title_property, price, description, listing_id }) => (
+            <Card key={listing_id} border="#9843c0" style={{ width: '22rem', border: "1px solid #9843c0" }}>
+              <Card.Img variant="top" src={Homes[listing_id % 5]} />
+              <Card.Body>
+                <Card.Title>{title_property}</Card.Title>
+                <Card.Text>
+                  {description.slice(0, 100)}
+                </Card.Text>
+                <Button style={{ backgroundColor: "#9843c0", color: 'white', border: '1px solid #9843c0' }}>View Details</Button>
+              </Card.Body>
+              <Card.Footer>
+                <p>${price}</p>
+                {this.props.favorites.findIndex(favorite => favorite.listing_id === listing_id) > -1 ?
+                  <AiFillHeart onClick={() => this.props.removeFavorite(listing_id)} className="favorite-icon" color="red" size="1.5em" />
+                  :
+                  <AiOutlineHeart onClick={() => this.props.addFavorite(listing_id)} className="favorite-icon" color="red" size="1.5em" />
+                }
+              </Card.Footer>
+            </Card>
+          ))}
+        </div>
+        <div className="view_more_container">
+          <Link className="view_more_favorites" to="/favorites">View Favorites</Link>
+        </div>
+      </section>
+    )
+  }
+
   render() {
     return (
-      <div class="homeContainer">
+      <div className="homeContainer">
+        {this.props.favorites.length > 0 ?
+          this.renderFavorites() : null
+        }
 
-      <h1>Listings</h1>
-
-      <div className="listingsContainer">
-        {this.state.listings.map(({ url, title_property, price, description }) => (
-          <Card border="#9843c0" style={{ width: '22rem', border: "1px solid #9843c0" }}>
-            <Card.Img variant="top" src={Homes[Math.floor(Math.random() * 5)]} />
-            <Card.Body>
-              <Card.Title>{title_property}</Card.Title>
-              <Card.Text>
-                {description.slice(0, 100)}
-              </Card.Text>
-              <Button style={{ backgroundColor: "#9843c0", color: 'white', border: '1px solid #9843c0' }}>View Details</Button>
-            </Card.Body>
-            <Card.Footer>
-              <p>${price}</p>
-              <AiOutlineHeart color="red" size="1.5em" />
-            </Card.Footer>
-          </Card>
-        ))}
+        <h1>Listings</h1>
+        <div className="listingsContainer">
+          {this.props.listings.map(({ url, title_property, price, description, listing_id }) => (
+            <Card key={listing_id} border="#9843c0" style={{ width: '22rem', border: "1px solid #9843c0" }}>
+              <Card.Img variant="top" src={Homes[listing_id % 5]} />
+              <Card.Body>
+                <Card.Title>{title_property}</Card.Title>
+                <Card.Text>
+                  {description.slice(0, 100)}
+                </Card.Text>
+                <Button style={{ backgroundColor: "#9843c0", color: 'white', border: '1px solid #9843c0' }}>View Details</Button>
+              </Card.Body>
+              <Card.Footer>
+                <p>${price}</p>
+                {this.props.favorites.findIndex(favorite => favorite.listing_id === listing_id) > -1 ?
+                  <AiFillHeart onClick={() => this.props.removeFavorite(listing_id)} className="favorite-icon" color="red" size="1.5em" />
+                  :
+                  <AiOutlineHeart onClick={() => this.props.addFavorite(listing_id)} className="favorite-icon" color="red" size="1.5em" />
+                }
+              </Card.Footer>
+            </Card>
+          ))}
+        </div>
       </div>
-   </div>
     )
   }
 }

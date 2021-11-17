@@ -20,7 +20,6 @@ class Login extends React.Component {
     axios.post('/api/auth/sign-in', { email: this.state.email, password: this.state.password })
       .then((res) => {
         // res contains token, and user information
-        console.log('What are we getting back from sign in', res.data);
 
         // Set the user state in the app.js USING the setUser method that we passed to this component
         this.props.setUser(res.data.user);
@@ -33,7 +32,6 @@ class Login extends React.Component {
       })
       .catch(function (error) {
         // handle error
-        console.log(error);
       });
   }
 
