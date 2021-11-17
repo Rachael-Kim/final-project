@@ -1,5 +1,6 @@
 import React from 'react';
-import { Card, Button, Form, Dropdown, Modal } from 'react-bootstrap';
+import { Card, Button, Form, Modal } from 'react-bootstrap';
+import Listings from './Listings';
 import Home1 from '../images/Home1.jpg';
 import Home2 from '../images/Home2.jpg';
 import Home3 from '../images/Home3.jpg';
@@ -110,16 +111,17 @@ class Home extends React.Component {
       if (this.state.state && listing.state !== this.state.state) {
         return false;
       }
-      if (this.state.isCatFriendly && listing.is_cat_friendly === false) {
+      if (this.state.isCatFriendly === true && listing.is_cat_friendly === false) {
         return false;
       }
-      if (this.state.isDogFriendly && listing.is_dog_friendly === false) {
+      if (this.state.isDogFriendly === true && listing.is_dog_friendly === false) {
         return false;
       }
+      // this.state.rooms = "5"   parseInt(this.state.rooms)
       if (this.state.rooms > 0 && listing.num_of_rooms < +this.state.rooms) {
         return false;
       }
-
+      // ['Co-Op', 'Condos' 'Single Family]
       if (this.state.homeTypes.length > 0 && !this.state.homeTypes.includes(listing.home_type)) {
         return false;
       }
@@ -234,31 +236,7 @@ class Home extends React.Component {
           </Modal.Footer>
         </Modal>
 
-        <div className="listingsContainer">
-          {filteredListings.length === 0 && <h3>No Listings Available</h3>}
-          {filteredListings.map(({ url, title_property, price, description, listing_id }) => (
-            <Card key={listing_id} border="#9843c0" style={{ width: '22rem', border: "1px solid #9843c0" }}>
-              <Card.Img variant="top" src={Homes[listing_id % 5]} />
-              <Card.Body>
-                <Card.Title>{title_property}</Card.Title>
-                <Card.Text>
-                  {description.slice(0, 100)}
-                </Card.Text>
-                <Button
-                  onClick={() => this.props.history.push(`/listing/${listing_id}`)}
-                  style={{ backgroundColor: "#9843c0", color: 'white', border: '1px solid #9843c0' }}>View Details</Button>
-              </Card.Body>
-              <Card.Footer>
-                <p>${price}</p>
-                {this.props.favorites.findIndex(favorite => favorite.listing_id === listing_id) > -1 ?
-                  <AiFillHeart onClick={() => this.props.removeFavorite(listing_id)} className="favorite-icon" color="red" size="1.5em" />
-                  :
-                  <AiOutlineHeart onClick={() => this.props.addFavorite(listing_id)} className="favorite-icon" color="red" size="1.5em" />
-                }
-              </Card.Footer>
-            </Card>
-          ))}
-        </div>
+        <Listings filteredListings={filteredListings} favorites={this.props.favorites} addFavorite={this.props.addFavorite} removeFavorite={this.props.removeFavorite}/>
       </div>
     )
   }

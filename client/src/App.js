@@ -7,14 +7,10 @@ import Navbar from './components/Navbar';
 import Home from './components/Home';
 import Listing from './components/Listing';
 import Favorites from './components/Favorites';
-
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './reset.css';
 import './layout.css';
 import './App.css';
-
-
 // PROPS - Share data between components
 // BIG BIG BIG CAVEAT - You can only pass props from a parent component to a child component
 
@@ -89,26 +85,22 @@ class App extends React.Component {
   }
 
   addFavorite(listingId) {
-    // Create new entry in favorites table
     const token = localStorage.getItem('token');
-
     axios.post('/api/listing/favorite', { listing_id: listingId }, {
       headers: {
         'X-Access-Token': token
       }
     })
       .then(res => {
-        // Find the listing
         const favorite = this.state.listings.find(listing => listing.listing_id === listingId);
         const likedFavorite = { favorite_id: res.data.favorite_id, ...favorite };
         this.setState({ favorites: [...this.state.favorites, likedFavorite] });
       })
       .catch(err => {
-        // handle err
-      })
+        alert(err);
+      });
   }
   removeFavorite(listingId) {
-
     const token = localStorage.getItem('token');
     axios.delete(`/api/listing/favorite/${listingId}`, {
       headers: {
@@ -116,12 +108,13 @@ class App extends React.Component {
       }
     })
       .then(res => {
+        // Filter out the listing that the user favorited
         const favorites = this.state.favorites.filter(favorite => favorite.listing_id !== listingId);
         this.setState({ favorites });
       })
       .catch(err => {
-        // handle err
-      })
+        alert(err);
+      });
   }
 
   sort(value) {
@@ -139,7 +132,6 @@ class App extends React.Component {
         break;
     }
   }
-
 
   render() {
     return (

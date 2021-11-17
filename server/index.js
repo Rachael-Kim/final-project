@@ -41,7 +41,7 @@ app.post('/api/auth/sign-up', (req, res, next) => {
     })
     .then(result => {
       const [user] = result.rows;
-      res.status(201).json('hello world');
+      res.status(201).json(user);
     })
     .catch(err => next(err));
 });
@@ -106,7 +106,7 @@ app.get('/api/listing/:listingId', authorizationMiddleware, (req, res, next) => 
       const commentsSql = `
       select *
       from comments
-      join users 
+      join users
       ON comments.user_id = users.user_id
       where comments.listing_id = $1
       ORDER BY comments.timestamp DESC
@@ -121,10 +121,7 @@ app.get('/api/listing/:listingId', authorizationMiddleware, (req, res, next) => 
     .catch(err => next(err));
 });
 
-// What route we want to hit when the user clicks on the heart
 app.post('/api/listing/favorite', authorizationMiddleware, (req, res, next) => {
-  // To create a new favorite, we need 2 pieces of information: user_id, listing_id
-  // User ID is stored in req.user.id
   const user_id = req.user.user_id;
   const listing_id = req.body.listing_id;
   const sql = `
@@ -184,22 +181,23 @@ app.post('/api/comment', authorizationMiddleware, (req, res, next) => {
   const { comment, listing_id } = req.body;
 
   const sql = `
-  insert into "comments" ("body", "user_id", "listing_id")
-        values ($1, $2, $3)
-        returning "comment_id"
+  INSERT INTO "comments" ("body", "user_id", "listing_id")
+        VALUES ($1, $2, $3)
+        RETURNING "comment_id"
   `;
   const params = [comment, user_id, listing_id];
+  // Create that comment in the database
   db.query(sql, params)
     .then(result => {
+      // Grab that comment that we just inserted so that we can respond to the frontend
       const lastCommentSql = `
-      select * from comments
-      join users 
+      SELECT * from comments
+      JOIN users
       ON comments.user_id = users.user_id
-      where comments.comment_id = $1
+      WHERE comments.comment_id = $1
       `;
       const params = [result.rows[0].comment_id];
       return db.query(lastCommentSql, params);
-
     })
     .then(result => {
       res.json(result.rows[0]);
@@ -215,5 +213,5 @@ app.get('*', (req, res) => {
 });
 
 app.listen(process.env.PORT, () => {
-  console.log(`express server listening on port ${process.env.PORT}`);
+  // console.log(`express server listening on port ${process.env.PORT}`);
 });

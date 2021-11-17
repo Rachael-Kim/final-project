@@ -144,7 +144,7 @@ class Favorites extends React.Component {
           <div className="comments">
             {this.state.comments.map(({ comment_id, body, timestamp, email }) => {
               const date = new Date(timestamp);
-              const formattedDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+              const formattedDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day:'2-digit' });
               return (
                 <div className="comment" key={comment_id}>
                   <div className="comment-header">
